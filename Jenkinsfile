@@ -5,18 +5,29 @@ pipeline {
             steps {
               sh '''
                  GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
+                 echo $GIT_COMMIT_HASH > .tmp/docker-tag.txt
                  docker build -t 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
               '''
             }
         }
         stage('Test') { 
             steps {
-                echo 'teste'
+                sh '''
+                    docker run -d 00-web:$(cat ./tmp/docker-tag.txt) --name 00-web-test-container -p 80:80
+                    TEST_PORT=$(curl -o /dev/null -s -w "%{http_code}" localhost)
+                    if [ $TEST_PORT -eq 200 ]; then
+                     echo "FUNCIONOU"
+                     exit 0
+                    else
+                      echo "Deu treta"
+                      exit 1
+                    fi
+                '''
             }
         }
         stage('Deploy') { 
             steps {
-                echo 'deploy'  
+                
             }
         }
     }
