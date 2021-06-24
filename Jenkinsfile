@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    GIT_COMMIT_HASH = sh('git rev-parse --short HEAD')
+                    GIT_COMMIT_HASH = sh(script: 'git rev-parse --short HEAD', returnStdout: true)
                 }
                 sh '''
                     docker build -t 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
