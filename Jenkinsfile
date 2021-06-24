@@ -22,20 +22,29 @@ pipeline {
                     TEST_PORT=$(curl -o /dev/null -s -w "%{http_code}" localhost)
                     docker stop 00-web-test-container
                     docker rm -f 00-web-test-container
-                    if [ $TEST_PORT -eq 200 ]; then
-                     echo "FUNCIONOU"
-                     exit 0
-                    else
+                    if [ $TEST_PORT -ne 200 ]; then
                       echo "Deu treta"
                       exit 1
                     fi
+                    echo  "FUNCIONOU"
+                    docker tag 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} 00-web:latest
+                '''
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh '''
+                    docker push 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                    docker push 00-web:latest
+                    docker rmi 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
                 '''
             }
         }
         stage('Deploy') { 
             steps {
                 sshagent(credentials: ['ssh']) {
-                    sh "ssh -o StrictHostKeyChecking=no root@${WEB_SERVER} hostname"
+                    sh "chmod +x start_docker.sh && scp start_docker.sh root@${WEB_SERVER}:/root"
+                    sh "ssh root@${WEB_SERVER} /root/start_docker.sh ${GIT_COMMIT_HASH}-${BUILD_NUMBER}" 
                 }
             }
         }
