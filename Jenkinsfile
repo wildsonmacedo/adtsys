@@ -2,6 +2,7 @@ pipeline {
     agent { label 'php' }
     
     environment {
+        WEB_SERVER = "172.31.4.155"
         GIT_COMMIT_HASH = "${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
     }
     
@@ -33,7 +34,9 @@ pipeline {
         }
         stage('Deploy') { 
             steps {
-                echo ''
+                sshagent(credentials: ['ssh']) {
+                    sh "ssh -o StrictHostKeyChecking=no root@${WEB_SERVER} hostname"
+                }
             }
         }
     }
