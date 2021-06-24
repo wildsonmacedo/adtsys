@@ -1,5 +1,10 @@
 pipeline {
     agent { label 'php' }
+    
+    environment {
+        GIT_COMMIT_HASH = ''
+    }
+    
     stages {
         stage('Build') {
             steps {
