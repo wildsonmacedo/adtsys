@@ -5,6 +5,7 @@ pipeline {
             steps {
               sh '''
                  GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
+                 mkdir .tmp
                  echo $GIT_COMMIT_HASH > .tmp/docker-tag.txt
                  docker build -t 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
               '''
