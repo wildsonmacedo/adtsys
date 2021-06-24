@@ -16,7 +16,7 @@ pipeline {
         stage('Test') { 
             steps {
                 sh '''
-                    docker run -d 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} --name 00-web-test-container -p 80:80
+                    docker run -d --name 00-web-test-container -p 80:80 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
                     sleep 5
                     TEST_PORT=$(curl -o /dev/null -s -w "%{http_code}" localhost)
                     docker stop 00-web-test-container
