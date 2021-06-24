@@ -15,6 +15,8 @@ pipeline {
                 sh '''
                     docker run -d 00-web:$(cat ./tmp/docker-tag.txt) --name 00-web-test-container -p 80:80
                     TEST_PORT=$(curl -o /dev/null -s -w "%{http_code}" localhost)
+                    docker stop 00-web-test-container
+                    docker rm -f 00-web-test-container
                     if [ $TEST_PORT -eq 200 ]; then
                      echo "FUNCIONOU"
                      exit 0
@@ -27,7 +29,7 @@ pipeline {
         }
         stage('Deploy') { 
             steps {
-                
+                echo ''
             }
         }
     }
