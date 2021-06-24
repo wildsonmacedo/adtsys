@@ -1,14 +1,14 @@
 pipeline {
     agent { label 'php' }
     stages {
-        stage('Build') { 
+        stage('Build') {
             steps {
-              sh '''
-                 GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
-                 mkdir .tmp
-                 echo $GIT_COMMIT_HASH > .tmp/docker-tag.txt
-                 docker build -t 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
-              '''
+                script {
+                    GIT_COMMIT_HASH = sh('git rev-parse --short HEAD')
+                }
+                sh '''
+                    docker build -t 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
+                '''
             }
         }
         stage('Test') { 
