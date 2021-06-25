@@ -1,7 +1,7 @@
 <?php
 
 $servername = "3.137.187.182";
-$username = "aroot";
+$username = "root";
 $password = "senha.0099";
 $dbname = "basedb"; 
 
