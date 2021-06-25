@@ -4,20 +4,21 @@ pipeline {
     environment {
         WEB_SERVER = "172.31.4.155"
         GIT_COMMIT_HASH = "${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
+        NOME_IMAGEM = "wildsonmacedo/00-web" 
     }
     
     stages {
         stage('Build') {
             steps {
                 sh '''
-                    docker build -t 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
+                    docker build -t ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER} -f Dockerfile .
                 '''
             }
         }
         stage('Test') { 
             steps {
                 sh '''
-                    docker run -d --name 00-web-test-container -p 80:80 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                    docker run -d --name 00-web-test-container -p 80:80 ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
                     sleep 5
                     TEST_PORT=$(curl -o /dev/null -s -w "%{http_code}" localhost)
                     docker stop 00-web-test-container
@@ -27,7 +28,7 @@ pipeline {
                       exit 1
                     fi
                     echo  "FUNCIONOU"
-                    docker tag 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER} 00-web:latest
+                    docker tag ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER} ${NOME_IMAGEM}:latest
                 '''
             }
         }
@@ -36,9 +37,9 @@ pipeline {
                 script {
                     docker.withRegistry('', 'dockerHub') {
                         sh '''
-                            docker push 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
-                            docker push 00-web:latest
-                            docker rmi 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                            docker push ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                            docker push ${NOME_IMAGEM}:latest
+                            docker rmi ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
                         '''
                     }
                 }
@@ -48,7 +49,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['ssh']) {
                     sh "chmod +x start_docker.sh && scp start_docker.sh root@${WEB_SERVER}:/root"
-                    sh "ssh root@${WEB_SERVER} /root/start_docker.sh ${GIT_COMMIT_HASH}-${BUILD_NUMBER}" 
+                    sh "ssh root@${WEB_SERVER} /root/start_docker.sh ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}" 
                 }
             }
         }
