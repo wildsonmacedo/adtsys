@@ -1,6 +1,6 @@
 <?php
 
-$servername = "172.31.8.132";
+$servername = "172.31.15.117";
 $username = "root";
 $password = "senha.00995";
 $dbname = "basedb"; 
