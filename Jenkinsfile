@@ -33,12 +33,14 @@ pipeline {
         }
         stage('Docker Push') {
             steps {
-                docker.withRegistry('', 'dockerHub') {
-                    sh '''
-                        docker push 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
-                        docker push 00-web:latest
-                        docker rmi 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
-                    '''
+                script {
+                    docker.withRegistry('', 'dockerHub') {
+                        sh '''
+                            docker push 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                            docker push 00-web:latest
+                            docker rmi 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                        '''
+                    }
                 }
             }
         }
