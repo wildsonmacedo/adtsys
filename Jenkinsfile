@@ -48,8 +48,8 @@ pipeline {
         stage('Deploy') { 
             steps {
                 sshagent(credentials: ['ssh']) {
-                    sh "chmod +x start_docker.sh && scp start_docker.sh root@${WEB_SERVER}:/root"
-                    sh "ssh root@${WEB_SERVER} /root/start_docker.sh ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}" 
+                    sh "chmod +x start_docker.sh && scp -o UserKnownHostsFile=/dev/null start_docker.sh root@${WEB_SERVER}:/root"
+                    sh "ssh -o UserKnownHostsFile=/dev/null root@${WEB_SERVER} /root/start_docker.sh ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}" 
                 }
             }
         }
