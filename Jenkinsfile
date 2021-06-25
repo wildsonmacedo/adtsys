@@ -2,7 +2,7 @@ pipeline {
     agent { label 'php' }
     
     environment {
-        WEB_SERVER = "172.31.4.239"
+        WEB_SERVER = "18.117.192.8"
         GIT_COMMIT_HASH = "${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
         NOME_IMAGEM = "wildsonmacedo/00-web" 
     }
