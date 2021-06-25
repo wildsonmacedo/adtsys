@@ -2,7 +2,7 @@
 
 $servername = "172.31.8.132";
 $username = "root";
-$password = "senha.0099";
+$password = "senha.00995";
 $dbname = "basedb"; 
 
 // Create connection
