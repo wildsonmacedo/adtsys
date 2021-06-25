@@ -33,17 +33,13 @@ pipeline {
         }
         stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                sh '''
-                docker login -u $user -p $pass 
-                '''
+                docker.withRegistry('', 'dockerHub') {
+                    sh '''
+                        docker push 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                        docker push 00-web:latest
+                        docker rmi 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                    '''
                 }
-                sh '''
-                    docker push 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
-                    docker push 00-web:latest
-                    docker rmi 00-web:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
-                    docker logout
-                '''
             }
         }
         stage('Deploy') { 
