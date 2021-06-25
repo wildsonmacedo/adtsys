@@ -18,11 +18,11 @@ pipeline {
         stage('Test') { 
             steps {
                 sh '''
-                    docker run -d --name 00-web-test-container -p 8080:80 ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
+                    docker run -d --name 00-web-${BUILD_NUMBER} -p 8080:80 ${NOME_IMAGEM}:${GIT_COMMIT_HASH}-${BUILD_NUMBER}
                     sleep 5
                     TEST_PORT=$(curl -o /dev/null -s -w "%{http_code}" localhost:8080)
-                    docker stop 00-web-test-container
-                    docker rm -f 00-web-test-container
+                    docker stop 00-web-${BUILD_NUMBER}
+                    docker rm -f 00-web-${BUILD_NUMBER}
                     if [ $TEST_PORT -ne 200 ]; then
                       echo "Deu treta"
                       exit 1
